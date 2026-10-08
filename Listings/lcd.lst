@@ -1,0 +1,122 @@
+C51 COMPILER V9.60.7.0   LCD                                                               10/01/2026 20:17:58 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\lcd.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lcd.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\lcd.l
+                    -st) TABS(2) OBJECT(.\Objects\lcd.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          /* Function from delay.c */
+   4          void delay_ms(unsigned int ms);
+   5          
+   6          
+   7          /* =================================================
+   8             LCD CONNECTION
+   9          
+  10             RS  -> P3.0 -> AT89S52 Pin 10
+  11             EN  -> P3.1 -> AT89S52 Pin 11
+  12             RW  -> GND
+  13          
+  14             D0-D7 -> P2.0-P2.7
+  15             ================================================= */
+  16          
+  17          sbit LCD_RS = P3^0;
+  18          sbit LCD_EN = P3^1;
+  19          
+  20          #define LCD_DATA P2
+  21          
+  22          
+  23          /* =================================================
+  24             LCD ENABLE PULSE
+  25             ================================================= */
+  26          
+  27          void lcd_enable(void)
+  28          {
+  29   1          LCD_EN = 1;
+  30   1          delay_ms(1);
+  31   1      
+  32   1          LCD_EN = 0;
+  33   1          delay_ms(1);
+  34   1      }
+  35          
+  36          
+  37          /* =================================================
+  38             LCD COMMAND
+  39             ================================================= */
+  40          
+  41          void lcd_cmd(unsigned char cmd)
+  42          {
+  43   1          LCD_RS = 0;
+  44   1      
+  45   1          LCD_DATA = cmd;
+  46   1      
+  47   1          lcd_enable();
+  48   1      
+  49   1          delay_ms(2);
+  50   1      }
+  51          
+  52          
+  53          /* =================================================
+  54             LCD DATA
+C51 COMPILER V9.60.7.0   LCD                                                               10/01/2026 20:17:58 PAGE 2   
+
+  55             ================================================= */
+  56          
+  57          void lcd_data(unsigned char value)
+  58          {
+  59   1          LCD_RS = 1;
+  60   1      
+  61   1          LCD_DATA = value;
+  62   1      
+  63   1          lcd_enable();
+  64   1      
+  65   1          delay_ms(2);
+  66   1      }
+  67          
+  68          
+  69          /* =================================================
+  70             LCD INITIALIZATION
+  71             ================================================= */
+  72          
+  73          void lcd_init(void)
+  74          {
+  75   1          delay_ms(20);
+  76   1      
+  77   1          lcd_cmd(0x38);     /* 8-bit, 2-line */
+  78   1          lcd_cmd(0x0C);     /* Display ON, cursor OFF */
+  79   1          lcd_cmd(0x01);     /* Clear display */
+  80   1          lcd_cmd(0x06);     /* Entry mode */
+  81   1          lcd_cmd(0x80);     /* First line */
+  82   1      }
+  83          
+  84          
+  85          /* =================================================
+  86             LCD STRING
+  87             ================================================= */
+  88          
+  89          void lcd_string(char *str)
+  90          {
+  91   1          while(*str)
+  92   1          {
+  93   2              lcd_data(*str);
+  94   2              str++;
+  95   2          }
+  96   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    113    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

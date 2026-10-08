@@ -1,0 +1,454 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          
+   4          /* =================================================
+   5             FUNCTION DECLARATIONS
+   6          
+   7             No .h files are used.
+   8             ================================================= */
+   9          
+  10          
+  11          /* ----- Delay ----- */
+  12          
+  13          void delay_ms(unsigned int ms);
+  14          
+  15          
+  16          /* ----- LCD ----- */
+  17          
+  18          void lcd_init(void);
+  19          void lcd_cmd(unsigned char cmd);
+  20          void lcd_data(unsigned char value);
+  21          void lcd_string(char *str);
+  22          
+  23          
+  24          /* ----- Keypad ----- */
+  25          
+  26          unsigned char keypad_getkey(void);
+  27          
+  28          
+  29          /* ----- Motor ----- */
+  30          
+  31          void motor_up(void);
+  32          void motor_down(void);
+  33          void motor_stop(void);
+  34          
+  35          
+  36          /* ----- Floor ----- */
+  37          
+  38          unsigned char get_current_floor(void);
+  39          
+  40          
+  41          /* ----- 7-Segment ----- */
+  42          
+  43          void display_floor(unsigned char floor);
+  44          void display_off(void);
+  45          
+  46          
+  47          /* =================================================
+  48             DISPLAY CURRENT FLOOR
+  49             ================================================= */
+  50          
+  51          void show_current_floor(unsigned char floor)
+  52          {
+  53   1          lcd_cmd(0x01);
+  54   1      
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 2   
+
+  55   1          if(floor <= 3)
+  56   1          {
+  57   2              lcd_string("CURRENT FLOOR:");
+  58   2      
+  59   2              lcd_cmd(0xC0);
+  60   2      
+  61   2              lcd_data('0' + floor);
+  62   2          }
+  63   1          else
+  64   1          {
+  65   2              lcd_string("FLOOR UNKNOWN");
+  66   2          }
+  67   1      }
+  68          
+  69          
+  70          /* =================================================
+  71             DISPLAY DESTINATION
+  72             ================================================= */
+  73          
+  74          void show_destination(unsigned char target)
+  75          {
+  76   1          lcd_cmd(0x01);
+  77   1      
+  78   1          lcd_string("DESTINATION:");
+  79   1      
+  80   1          lcd_cmd(0xC0);
+  81   1      
+  82   1          lcd_string("FLOOR ");
+  83   1      
+  84   1          lcd_data('0' + target);
+  85   1      }
+  86          
+  87          
+  88          /* =================================================
+  89             DISPLAY MOVING UP
+  90             ================================================= */
+  91          
+  92          void show_moving_up(unsigned char target)
+  93          {
+  94   1          lcd_cmd(0x01);
+  95   1      
+  96   1          lcd_string("MOVING UP");
+  97   1      
+  98   1          lcd_cmd(0xC0);
+  99   1      
+ 100   1          lcd_string("TO FLOOR ");
+ 101   1      
+ 102   1          lcd_data('0' + target);
+ 103   1      }
+ 104          
+ 105          
+ 106          /* =================================================
+ 107             DISPLAY MOVING DOWN
+ 108             ================================================= */
+ 109          
+ 110          void show_moving_down(unsigned char target)
+ 111          {
+ 112   1          lcd_cmd(0x01);
+ 113   1      
+ 114   1          lcd_string("MOVING DOWN");
+ 115   1      
+ 116   1          lcd_cmd(0xC0);
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 3   
+
+ 117   1      
+ 118   1          lcd_string("TO FLOOR ");
+ 119   1      
+ 120   1          lcd_data('0' + target);
+ 121   1      }
+ 122          
+ 123          
+ 124          /* =================================================
+ 125             DISPLAY ARRIVAL
+ 126             ================================================= */
+ 127          
+ 128          void show_arrived(unsigned char floor)
+ 129          {
+ 130   1          lcd_cmd(0x01);
+ 131   1      
+ 132   1          lcd_string("REACHED FLOOR");
+ 133   1      
+ 134   1          lcd_cmd(0xC0);
+ 135   1      
+ 136   1          lcd_string("FLOOR ");
+ 137   1      
+ 138   1          lcd_data('0' + floor);
+ 139   1      }
+ 140          
+ 141          
+ 142          /* =================================================
+ 143             DISPLAY ALREADY THERE
+ 144             ================================================= */
+ 145          
+ 146          void show_already_there(unsigned char floor)
+ 147          {
+ 148   1          lcd_cmd(0x01);
+ 149   1      
+ 150   1          lcd_string("ALREADY AT");
+ 151   1      
+ 152   1          lcd_cmd(0xC0);
+ 153   1      
+ 154   1          lcd_string("FLOOR ");
+ 155   1      
+ 156   1          lcd_data('0' + floor);
+ 157   1      }
+ 158          
+ 159          
+ 160          /* =================================================
+ 161             MAIN PROGRAM
+ 162             ================================================= */
+ 163          
+ 164          void main(void)
+ 165          {
+ 166   1          unsigned char current_floor;
+ 167   1          unsigned char target_floor;
+ 168   1          unsigned char key;
+ 169   1      
+ 170   1          unsigned char moving;
+ 171   1      
+ 172   1      
+ 173   1          /* =================================================
+ 174   1             INITIALIZATION
+ 175   1             ================================================= */
+ 176   1      
+ 177   1          motor_stop();
+ 178   1      
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 4   
+
+ 179   1          lcd_init();
+ 180   1      
+ 181   1          display_off();
+ 182   1      
+ 183   1          P1 = 0xFF;
+ 184   1      
+ 185   1          target_floor = 255;
+ 186   1      
+ 187   1          moving = 0;
+ 188   1      
+ 189   1      
+ 190   1          /* =================================================
+ 191   1             STARTUP MESSAGE
+ 192   1             ================================================= */
+ 193   1      
+ 194   1          lcd_cmd(0x01);
+ 195   1      
+ 196   1          lcd_string("ELEVATOR READY");
+ 197   1      
+ 198   1          delay_ms(1000);
+ 199   1      
+ 200   1      
+ 201   1          /* =================================================
+ 202   1             MAIN CONTROL LOOP
+ 203   1             ================================================= */
+ 204   1      
+ 205   1          while(1)
+ 206   1          {
+ 207   2      
+ 208   2              /* =============================================
+ 209   2                 READ CURRENT FLOOR
+ 210   2                 ============================================= */
+ 211   2      
+ 212   2              current_floor = get_current_floor();
+ 213   2      
+ 214   2      
+ 215   2              /* =============================================
+ 216   2                 UPDATE 7-SEGMENT
+ 217   2      
+ 218   2                 7-segment always shows current floor.
+ 219   2                 ============================================= */
+ 220   2      
+ 221   2              if(current_floor <= 3)
+ 222   2              {
+ 223   3                  display_floor(current_floor);
+ 224   3              }
+ 225   2              else
+ 226   2              {
+ 227   3                  display_off();
+ 228   3              }
+ 229   2      
+ 230   2      
+ 231   2              /* =================================================
+ 232   2                 ELEVATOR IS NOT MOVING
+ 233   2                 ================================================= */
+ 234   2      
+ 235   2              if(moving == 0)
+ 236   2              {
+ 237   3      
+ 238   3                  /* -----------------------------------------
+ 239   3                     Read keypad
+ 240   3                     ----------------------------------------- */
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 5   
+
+ 241   3      
+ 242   3                  key = keypad_getkey();
+ 243   3      
+ 244   3      
+ 245   3                  /* =========================================
+ 246   3                     VALID DESTINATION
+ 247   3      
+ 248   3                     0 = Ground
+ 249   3                     1 = Floor 1
+ 250   3                     2 = Floor 2
+ 251   3                     3 = Floor 3
+ 252   3                     ========================================= */
+ 253   3      
+ 254   3                  if(key == '0' ||
+ 255   3                     key == '1' ||
+ 256   3                     key == '2' ||
+ 257   3                     key == '3')
+ 258   3                  {
+ 259   4      
+ 260   4                      target_floor = key - '0';
+ 261   4      
+ 262   4      
+ 263   4                      /* -------------------------------------
+ 264   4                         Show destination
+ 265   4                         ------------------------------------- */
+ 266   4      
+ 267   4                      show_destination(target_floor);
+ 268   4      
+ 269   4                      delay_ms(500);
+ 270   4      
+ 271   4      
+ 272   4                      /* =====================================
+ 273   4                         CASE 1:
+ 274   4                         ALREADY AT DESTINATION
+ 275   4                         ===================================== */
+ 276   4      
+ 277   4                      if(current_floor == target_floor)
+ 278   4                      {
+ 279   5      
+ 280   5                          motor_stop();
+ 281   5      
+ 282   5                          show_already_there(target_floor);
+ 283   5      
+ 284   5                          delay_ms(1000);
+ 285   5      
+ 286   5                          target_floor = 255;
+ 287   5                      }
+ 288   4      
+ 289   4      
+ 290   4                      /* =====================================
+ 291   4                         CASE 2:
+ 292   4                         MOVE UP
+ 293   4                         ===================================== */
+ 294   4      
+ 295   4                      else if(current_floor < target_floor)
+ 296   4                      {
+ 297   5      
+ 298   5                          motor_up();
+ 299   5      
+ 300   5                          moving = 1;
+ 301   5      
+ 302   5                          show_moving_up(target_floor);
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 6   
+
+ 303   5                      }
+ 304   4      
+ 305   4      
+ 306   4                      /* =====================================
+ 307   4                         CASE 3:
+ 308   4                         MOVE DOWN
+ 309   4                         ===================================== */
+ 310   4      
+ 311   4                      else if(current_floor > target_floor)
+ 312   4                      {
+ 313   5      
+ 314   5                          motor_down();
+ 315   5      
+ 316   5                          moving = 1;
+ 317   5      
+ 318   5                          show_moving_down(target_floor);
+ 319   5                      }
+ 320   4                  }
+ 321   3      
+ 322   3      
+ 323   3                  /* =========================================
+ 324   3                     INVALID KEYS
+ 325   3      
+ 326   3                     4-9, *, #
+ 327   3                     ========================================= */
+ 328   3      
+ 329   3                  else if(key != 0)
+ 330   3                  {
+ 331   4      
+ 332   4                      lcd_cmd(0x01);
+ 333   4      
+ 334   4                      lcd_string("INVALID FLOOR");
+ 335   4      
+ 336   4                      delay_ms(700);
+ 337   4                  }
+ 338   3      
+ 339   3      
+ 340   3                  /* =========================================
+ 341   3                     NO KEY PRESSED
+ 342   3                     ========================================= */
+ 343   3      
+ 344   3                  else
+ 345   3                  {
+ 346   4      
+ 347   4                      if(current_floor <= 3)
+ 348   4                      {
+ 349   5                          show_current_floor(current_floor);
+ 350   5                      }
+ 351   4                  }
+ 352   3              }
+ 353   2      
+ 354   2      
+ 355   2              /* =================================================
+ 356   2                 ELEVATOR IS MOVING
+ 357   2                 ================================================= */
+ 358   2      
+ 359   2              else
+ 360   2              {
+ 361   3      
+ 362   3                  /* -----------------------------------------
+ 363   3                     Valid floor sensor detected?
+ 364   3                     ----------------------------------------- */
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 7   
+
+ 365   3      
+ 366   3                  if(current_floor <= 3)
+ 367   3                  {
+ 368   4      
+ 369   4                      /* =====================================
+ 370   4                         TARGET REACHED
+ 371   4                         ===================================== */
+ 372   4      
+ 373   4                      if(current_floor == target_floor)
+ 374   4                      {
+ 375   5      
+ 376   5                          motor_stop();
+ 377   5      
+ 378   5                          moving = 0;
+ 379   5      
+ 380   5                          show_arrived(target_floor);
+ 381   5      
+ 382   5                          delay_ms(1500);
+ 383   5      
+ 384   5                          target_floor = 255;
+ 385   5                      }
+ 386   4      
+ 387   4      
+ 388   4                      /* =====================================
+ 389   4                         TARGET NOT REACHED
+ 390   4      
+ 391   4                         Continue in correct direction.
+ 392   4                         ===================================== */
+ 393   4      
+ 394   4                      else
+ 395   4                      {
+ 396   5      
+ 397   5                          if(current_floor < target_floor)
+ 398   5                          {
+ 399   6                              motor_up();
+ 400   6                          }
+ 401   5                          else
+ 402   5                          {
+ 403   6                              motor_down();
+ 404   6                          }
+ 405   5                      }
+ 406   4                  }
+ 407   3              }
+ 408   2      
+ 409   2      
+ 410   2              /* ---------------------------------------------
+ 411   2                 Small control delay
+ 412   2                 --------------------------------------------- */
+ 413   2      
+ 414   2              delay_ms(100);
+ 415   2          }
+ 416   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    506    ----
+   CONSTANT SIZE    =    135    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      10
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              10/01/2026 20:17:57 PAGE 8   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

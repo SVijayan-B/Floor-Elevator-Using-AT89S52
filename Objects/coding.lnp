@@ -1,0 +1,10 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\delay.obj",
+".\Objects\display.obj",
+".\Objects\floor.obj",
+".\Objects\keypad.obj",
+".\Objects\lcd.obj",
+".\Objects\motor.obj" 
+TO ".\Objects\coding" 
+PRINT(".\Listings\coding.m51") RAMSIZE(256) 

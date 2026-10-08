@@ -1,0 +1,87 @@
+C51 COMPILER V9.60.7.0   DISPLAY                                                           10/01/2026 20:17:57 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DISPLAY
+OBJECT MODULE PLACED IN .\Objects\display.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE display.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\d
+                    -isplay.lst) TABS(2) OBJECT(.\Objects\display.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          
+   4          /* =================================================
+   5             7-SEGMENT DISPLAY
+   6          
+   7             P0.0 -> a
+   8             P0.1 -> b
+   9             P0.2 -> c
+  10             P0.3 -> d
+  11             P0.4 -> e
+  12             P0.5 -> f
+  13             P0.6 -> g
+  14             P0.7 -> dp
+  15          
+  16             Common cathode assumed.
+  17          
+  18             ================================================= */
+  19          
+  20          #define SEGMENT P0
+  21          
+  22          
+  23          /* =================================================
+  24             DISPLAY FLOOR
+  25             ================================================= */
+  26          
+  27          void display_floor(unsigned char floor)
+  28          {
+  29   1          switch(floor)
+  30   1          {
+  31   2              case 0:
+  32   2                  SEGMENT = 0x3F;
+  33   2                  break;
+  34   2      
+  35   2              case 1:
+  36   2                  SEGMENT = 0x06;
+  37   2                  break;
+  38   2      
+  39   2              case 2:
+  40   2                  SEGMENT = 0x5B;
+  41   2                  break;
+  42   2      
+  43   2              case 3:
+  44   2                  SEGMENT = 0x4F;
+  45   2                  break;
+  46   2      
+  47   2              default:
+  48   2                  SEGMENT = 0x00;
+  49   2                  break;
+  50   2          }
+  51   1      }
+  52          
+  53          
+  54          /* =================================================
+C51 COMPILER V9.60.7.0   DISPLAY                                                           10/01/2026 20:17:57 PAGE 2   
+
+  55             DISPLAY OFF
+  56             ================================================= */
+  57          
+  58          void display_off(void)
+  59          {
+  60   1          SEGMENT = 0x00;
+  61   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     38    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

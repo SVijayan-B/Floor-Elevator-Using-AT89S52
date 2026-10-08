@@ -1,0 +1,228 @@
+C51 COMPILER V9.60.7.0   KEYPAD                                                            10/01/2026 20:17:57 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEYPAD
+OBJECT MODULE PLACED IN .\Objects\keypad.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE keypad.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ke
+                    -ypad.lst) TABS(2) OBJECT(.\Objects\keypad.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          /* Function from delay.c */
+   4          void delay_ms(unsigned int ms);
+   5          
+   6          
+   7          /* =================================================
+   8             KEYPAD CONNECTION
+   9          
+  10             COLUMNS:
+  11          
+  12             P1.0 -> keypad 1
+  13             P1.1 -> keypad 2
+  14             P1.2 -> keypad 3
+  15          
+  16             ROWS:
+  17          
+  18             P1.3 -> keypad A
+  19             P1.4 -> keypad B
+  20             P1.5 -> keypad C
+  21             P1.6 -> keypad D
+  22          
+  23             P1.7 -> unused
+  24          
+  25          
+  26             KEYPAD LAYOUT:
+  27          
+  28                 1   2   3
+  29                 4   5   6
+  30                 7   8   9
+  31                 *   0   #
+  32          
+  33             ================================================= */
+  34          
+  35          #define KEYPAD P1
+  36          
+  37          
+  38          /* =================================================
+  39             KEYPAD SCANNER
+  40             ================================================= */
+  41          
+  42          unsigned char keypad_getkey(void)
+  43          {
+  44   1          unsigned char value;
+  45   1      
+  46   1      
+  47   1          /* =============================================
+  48   1             ROW A
+  49   1             Keys: 1 2 3
+  50   1      
+  51   1             P1.3 = 0
+  52   1             ============================================= */
+  53   1      
+  54   1          KEYPAD = 0xF7;
+C51 COMPILER V9.60.7.0   KEYPAD                                                            10/01/2026 20:17:57 PAGE 2   
+
+  55   1      
+  56   1          value = KEYPAD & 0x07;
+  57   1      
+  58   1          if(value != 0x07)
+  59   1          {
+  60   2              delay_ms(20);
+  61   2      
+  62   2              value = KEYPAD & 0x07;
+  63   2      
+  64   2              if(value == 0x06)
+  65   2              {
+  66   3                  while((KEYPAD & 0x07) != 0x07);
+  67   3                  return '1';
+  68   3              }
+  69   2      
+  70   2              if(value == 0x05)
+  71   2              {
+  72   3                  while((KEYPAD & 0x07) != 0x07);
+  73   3                  return '2';
+  74   3              }
+  75   2      
+  76   2              if(value == 0x03)
+  77   2              {
+  78   3                  while((KEYPAD & 0x07) != 0x07);
+  79   3                  return '3';
+  80   3              }
+  81   2          }
+  82   1      
+  83   1      
+  84   1          /* =============================================
+  85   1             ROW B
+  86   1             Keys: 4 5 6
+  87   1      
+  88   1             P1.4 = 0
+  89   1             ============================================= */
+  90   1      
+  91   1          KEYPAD = 0xEF;
+  92   1      
+  93   1          value = KEYPAD & 0x07;
+  94   1      
+  95   1          if(value != 0x07)
+  96   1          {
+  97   2              delay_ms(20);
+  98   2      
+  99   2              value = KEYPAD & 0x07;
+ 100   2      
+ 101   2              if(value == 0x06)
+ 102   2              {
+ 103   3                  while((KEYPAD & 0x07) != 0x07);
+ 104   3                  return '4';
+ 105   3              }
+ 106   2      
+ 107   2              if(value == 0x05)
+ 108   2              {
+ 109   3                  while((KEYPAD & 0x07) != 0x07);
+ 110   3                  return '5';
+ 111   3              }
+ 112   2      
+ 113   2              if(value == 0x03)
+ 114   2              {
+ 115   3                  while((KEYPAD & 0x07) != 0x07);
+ 116   3                  return '6';
+C51 COMPILER V9.60.7.0   KEYPAD                                                            10/01/2026 20:17:57 PAGE 3   
+
+ 117   3              }
+ 118   2          }
+ 119   1      
+ 120   1      
+ 121   1          /* =============================================
+ 122   1             ROW C
+ 123   1             Keys: 7 8 9
+ 124   1      
+ 125   1             P1.5 = 0
+ 126   1             ============================================= */
+ 127   1      
+ 128   1          KEYPAD = 0xDF;
+ 129   1      
+ 130   1          value = KEYPAD & 0x07;
+ 131   1      
+ 132   1          if(value != 0x07)
+ 133   1          {
+ 134   2              delay_ms(20);
+ 135   2      
+ 136   2              value = KEYPAD & 0x07;
+ 137   2      
+ 138   2              if(value == 0x06)
+ 139   2              {
+ 140   3                  while((KEYPAD & 0x07) != 0x07);
+ 141   3                  return '7';
+ 142   3              }
+ 143   2      
+ 144   2              if(value == 0x05)
+ 145   2              {
+ 146   3                  while((KEYPAD & 0x07) != 0x07);
+ 147   3                  return '8';
+ 148   3              }
+ 149   2      
+ 150   2              if(value == 0x03)
+ 151   2              {
+ 152   3                  while((KEYPAD & 0x07) != 0x07);
+ 153   3                  return '9';
+ 154   3              }
+ 155   2          }
+ 156   1      
+ 157   1      
+ 158   1          /* =============================================
+ 159   1             ROW D
+ 160   1             Keys: * 0 #
+ 161   1      
+ 162   1             P1.6 = 0
+ 163   1             ============================================= */
+ 164   1      
+ 165   1          KEYPAD = 0xBF;
+ 166   1      
+ 167   1          value = KEYPAD & 0x07;
+ 168   1      
+ 169   1          if(value != 0x07)
+ 170   1          {
+ 171   2              delay_ms(20);
+ 172   2      
+ 173   2              value = KEYPAD & 0x07;
+ 174   2      
+ 175   2              if(value == 0x06)
+ 176   2              {
+ 177   3                  while((KEYPAD & 0x07) != 0x07);
+ 178   3                  return '*';
+C51 COMPILER V9.60.7.0   KEYPAD                                                            10/01/2026 20:17:57 PAGE 4   
+
+ 179   3              }
+ 180   2      
+ 181   2              if(value == 0x05)
+ 182   2              {
+ 183   3                  while((KEYPAD & 0x07) != 0x07);
+ 184   3                  return '0';
+ 185   3              }
+ 186   2      
+ 187   2              if(value == 0x03)
+ 188   2              {
+ 189   3                  while((KEYPAD & 0x07) != 0x07);
+ 190   3                  return '#';
+ 191   3              }
+ 192   2          }
+ 193   1      
+ 194   1      
+ 195   1          /* No key pressed */
+ 196   1      
+ 197   1          return 0;
+ 198   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    263    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

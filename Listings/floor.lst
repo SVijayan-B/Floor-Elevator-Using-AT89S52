@@ -1,0 +1,78 @@
+C51 COMPILER V9.60.7.0   FLOOR                                                             10/01/2026 20:17:57 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE FLOOR
+OBJECT MODULE PLACED IN .\Objects\floor.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE floor.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\flo
+                    -or.lst) TABS(2) OBJECT(.\Objects\floor.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          
+   4          /* =================================================
+   5             FLOOR SENSOR CONNECTIONS
+   6          
+   7             SW0 -> P3.4 -> Pin 14 -> FLOOR 0
+   8             SW1 -> P3.5 -> Pin 15 -> FLOOR 1
+   9             SW2 -> P3.6 -> Pin 16 -> FLOOR 2
+  10             SW3 -> P3.7 -> Pin 17 -> FLOOR 3
+  11          
+  12             ACTIVE LOW:
+  13          
+  14             0 = sensor active
+  15             1 = sensor inactive
+  16          
+  17             ================================================= */
+  18          
+  19          sbit FLOOR0 = P3^4;
+  20          sbit FLOOR1 = P3^5;
+  21          sbit FLOOR2 = P3^6;
+  22          sbit FLOOR3 = P3^7;
+  23          
+  24          
+  25          /* =================================================
+  26             GET CURRENT FLOOR
+  27             ================================================= */
+  28          
+  29          unsigned char get_current_floor(void)
+  30          {
+  31   1          if(FLOOR0 == 0)
+  32   1          {
+  33   2              return 0;
+  34   2          }
+  35   1      
+  36   1          if(FLOOR1 == 0)
+  37   1          {
+  38   2              return 1;
+  39   2          }
+  40   1      
+  41   1          if(FLOOR2 == 0)
+  42   1          {
+  43   2              return 2;
+  44   2          }
+  45   1      
+  46   1          if(FLOOR3 == 0)
+  47   1          {
+  48   2              return 3;
+  49   2          }
+  50   1      
+  51   1          return 255;
+  52   1      }
+
+
+C51 COMPILER V9.60.7.0   FLOOR                                                             10/01/2026 20:17:57 PAGE 2   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     27    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
